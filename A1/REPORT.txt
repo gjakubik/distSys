@@ -1,0 +1,102 @@
+Test Outputs:
+
+Test 1: Trivial Function Call
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 2000000 | 1.39984979248    | 6.999248962e-07      | 0.0002701799385  | 6.000045687e-07  |
++-----------------------------------------------------------------------------------------+
+
+Test 2: Create/Delete File in Home Dir
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 400     | 1.67813818157    | 0.00419534545391798  | 0.005122845061   | 0.003247731132   |
++-----------------------------------------------------------------------------------------+
+
+Test 2: Create/Delete File in /tmp
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 30000   | 1.80844671908    | 6.02815573026116e-05 | 0.0005798810162  | 5.855504423e-05  |
++-----------------------------------------------------------------------------------------+
+
+Test 4: Get Current Wall Clock Time
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 700000  | 1.32049595565    | 1.88642279378005e-06 | 3.164308146e-05  | 1.825857908e-06  |
++-----------------------------------------------------------------------------------------+
+
+Test 5: Insert Item Into Python Dict
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  | Fastset Avg Op Time! |            Most Variation!          |
+| 2000000 | 1.04373795493    | 5.21868977462873e-07 | 0.116071891      | 3.80910933e-07   |
++-----------------------------------------------------------------------------------------+
+
+Test 6: Make and Close TCP Connection to Google
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 200     | 2.28251770302    | 0.0114125885150861   | 0.02053358802    | 0.01031594002    |
++-----------------------------------------------------------------------------------------+
+
+Test 7: Make an HTTP Connection to Github and read back HTML
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  | Slowest Avg Op Time! |                  |                  |
+| 10      | 1.97687179036    | 0.197687179036438    | 0.2479010872     | 0.1740054421     |
++-----------------------------------------------------------------------------------------+
+
+Test 8: Open a Large JSON File and Parse it
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 8000    | 2.24595826748    | 0.000280744783434784 | 0.0004952701274  | 0.0002737960313  |
++-----------------------------------------------------------------------------------------+
+
+Test 9: Use 'scandir' to 'stat' Each Item in Home Dir
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 2000    | 1.6812639595     | 0.000840631979750469 | 0.001946185948   | 0.0007661869749  |
++-----------------------------------------------------------------------------------------+
+
+Test 10: Run ls -l as a Subprocess
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 400     | 5.63313012361    | 0.0140828253090149   | 0.01676544803    | 0.01093812101    |
++-----------------------------------------------------------------------------------------+
+
+
+The fastest test was inserting items into a dictionary. This is because hash tables are 
+optimized for insert and lookup, with an O(1) time complexity on its operations. This was
+slightly faster than other simple operations like the trivial function call and current wall
+clock time just because there are more function calls beneath them.
+
+Inserting items into a dictionary also had the most variation, with one operation taking
+more than a tenth of a second, even though it had the fastest op time. I think this may be
+the first insert, where the dict needs to be initialized and actually pulled into the cache.
+
+The slowest average op time is the http request. This is because there is networking going
+on, so there is more underlying code being run than many others, and the request is dependent
+on the response of the server. In addition, there is actuially data being read into memory
+after the connection is established, which in tandem with extra underlying code makes this
+operation decisively more costly than a TCP request.
+
+For creating and deleting files, /tmp is king because it is optimized for qiuck data storage.
+Sometimes, it is even stored directly on RAM to make it as efficient as possible to create
+and clean files from there. As for my home directory, it is with all the regular chumps on
+disk, and therefore takes longer to write to and subsequently clean.
+
+As for the scandir vs ls -l, scandir is much faster. This is because the program interacts
+directly with the os to get the info it needs, as opposed to the subprocess method, which
+is costly because a whole new process must be created and waited for to finish.
+
+An anomoly I noticed with Test 10 was that when running the file on its own, the loop
+completes in about 2-3 seconds. However, when it is run through another python file, it
+takes over double the time to complete. I am not sure why this is, but I thought it was
+interesting nonetheless.
+

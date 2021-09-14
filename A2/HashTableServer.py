@@ -5,14 +5,18 @@ import socket
 from HashTable import HashTable
 
 def handleConnection(conn):
-    pass
+    while True:
+        header = conn.recv(1024)
+        if not header:
+            break
+        print(header)
 
 def main():
     
     #Check input args
     if len(sys.argv) != 2:
         print("Usage: python3 HashTableServer.py PORTNUM")
-        print("PORTNUM of 0 will choose an available port")
+        print("PORTNUM of 0 will choose first available port")
         return
 
     portNum = int(sys.argv[1])
@@ -24,12 +28,7 @@ def main():
         conn, addr = sock.accept()
         with conn:
             print('Connected to by: ', addr)
-            while True:
-                handleConnection(conn)
-                data = conn.recv(1024)
-                if not data:
-                    break
-                print(str(data))
+            handleConnection(conn)
 
 if __name__ == "__main__":
     main()

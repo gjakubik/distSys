@@ -8,7 +8,7 @@ class HashTableClient():
         self.sock.connect((host, port))
 
     def sendJson(self, jsonObj):
-        self.sock.sendall(bytearray(json.dumps(jsonObj)))
+        self.sock.sendall(json.dumps(jsonObj))
 
     def recieveJson(self):
         return json.loads(self.sock.recv(1024))

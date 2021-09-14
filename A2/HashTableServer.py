@@ -4,6 +4,9 @@ import sys
 import socket
 from HashTable import HashTable
 
+def handleConnection(conn):
+    pass
+
 def main():
     
     #Check input args
@@ -22,6 +25,7 @@ def main():
         with conn:
             print('Connected to by: ', addr)
             while True:
+                handleConnection(conn)
                 data = conn.recv(1024)
                 if not data:
                     break

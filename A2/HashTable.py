@@ -14,10 +14,13 @@ class HashTable():
         return self.d.pop(key)
 
     def scan(self, regex):
+        print(f"Compiling regex: {regex}")
         r = re.compile(regex)
         matches = []
         for key in self.d.keys():
-            match = (r.search(key) != None)
+            print(f"searching key: {key}")
+            match = (r.search(str(key)) != None)
+            print("adding key")
             if match: matches.append(key)
 
         return matches

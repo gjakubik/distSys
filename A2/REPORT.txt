@@ -1,0 +1,52 @@
+JSON Specs by RPC:
+
+The following will show data sent, in the following format:
+[SERVER|CLIENT] (Description | String Representation) of data sent
+
+insert:
+[CLIENT] message length in bytes ex(1024)
+[CLIENT] {"method": "insert", "key": x, "value": y}
+[SERVER] message length in bytes ex(1024)
+On Success:
+[SERVER] {"status": "OK", "data": {"method": "insert", "key": x, "value": y}}
+On Failure:
+[SERVER] {"status": "Bad Request"}
+
+lookup:
+[CLIENT] message length in bytes ex(1024)
+[CLIENT] {"lookup": "insert", "key": x}
+[SERVER] message length in bytes ex(1024)
+On Success:
+[SERVER] {"status": "OK", "data": {"lookup": "insert", "key": x, "value": y}}
+On Failure:
+[SERVER] {"status": "Bad Request"}
+
+remove:
+[CLIENT] message length in bytes ex(1024)
+[CLIENT] {"method": "remove", "key": x}
+[SERVER] message length in bytes ex(1024)
+On Success:
+[SERVER] {"status": "OK", "data": {"remove": "insert", "key": x, "value": y}}
+On Failure:
+[SERVER] {"status": "Bad Request"}
+
+scan:
+[CLIENT] message length in bytes ex(1024)
+[CLIENT] {"method": "scan", "regex": r}
+[SERVER] message length in bytes ex(1024)
+On Success:
+[SERVER] {"status": "OK", "data": {"method": "insert", "regex": r, "matches": [key1, key2, key3, ...]}}
+On Failure:
+[SERVER] {"status": "Bad Request"}
+
+NOTE: A DISCONNECT message ("DC") can be sent by either the server or client at any time, 
+which will cause the server to close the connection and the client to close completely.
+This is usually invoked when the client closes, as to gracefully close the server's 
+connection and allow it to listen again
+
+
+
+
+
+
+

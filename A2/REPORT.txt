@@ -45,6 +45,44 @@ This is usually invoked when the client closes, as to gracefully close the serve
 connection and allow it to listen again
 
 
+Performance Report:
+Inserting numbers...
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 39      | 3.02709737897    | 0.07761788151215     | 0.08038121101    | 0.0008561320137  |
++-----------------------------------------------------------------------------------------+
+
+Looking up numbers...
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 38      | 3.02884606284    | 0.0797064753377957   | 0.08015614108    | 0.07894510403    |
++-----------------------------------------------------------------------------------------+
+
+Scanning for regexes...
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 38      | 3.05885195604    | 0.0804961041063315   | 0.08104596904    | 0.07998158806    |
++-----------------------------------------------------------------------------------------+
+
+Removing as many numbers as possible...
++-----------------------------------------------------------------------------------------+
+| Num Ops | Total Time (s)   | Average Op Time (s)  | Slowest Op (s)   | Fastest Op (s)   |
+|         |                  |                      |                  |                  |
+| 38      | 3.02304083807    | 0.0795537062651037   | 0.08100736502    | 0.07891325001    |
++-----------------------------------------------------------------------------------------+
+
+Each of these gets through the operations in about the same time. This is somewhat suprising given
+The large difference between the time a lookup and a scan should take. The thing is, though,
+in relation to tcp networking calls, all these differences are relatively minor for smaller sets 
+of data, meaning that when only testing each for a few seconds, the time for each network call is
+by far the majority of the time being taken each time. Also, just thinking about the 
+fact that 2000000 dict inserts could be done in one second when simply doing it on your own machine
+it is obvious that when only 39 can happen in 3 seconds means that those operatons just dont really 
+count in the overall execution time of a remote procedure call.
+
 
 
 

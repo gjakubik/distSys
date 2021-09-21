@@ -27,7 +27,7 @@ def sendData(conn, msg):
     conn.sendall(message)
 
 def handleRequest(conn, req, ht):
-    #print(f'[REQUESTED] {req}')
+    print(f'[REQUESTED] {req}')
     if req["method"] == "insert":
         ht.insert(req["key"], req["value"])
         sendData(conn, json.dumps({"status": "OK", "data": req}))

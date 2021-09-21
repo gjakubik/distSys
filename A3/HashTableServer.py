@@ -3,6 +3,7 @@
 import sys
 import socket
 import json
+import time
 from HashTable import HashTable
 
 # Constants
@@ -21,6 +22,7 @@ def sendData(conn, msg):
     message = msg.encode(ENCODING)
     print(len(message))
     sendHeader(conn, len(message))
+    time.sleep(1)
     conn.send(message)
 
 def handleRequest(conn, req, ht):

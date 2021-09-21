@@ -22,10 +22,12 @@ class HashTableClient():
         self.sock.send(sendLen)
 
     def sendData(self, msg):
-        print(f'[SENDING] {msg}')
         message = msg.encode(ENCODING)
-        self.sendHeader(len(message))
-        self.sock.send(message)
+        sendLen = str(len(message)).encode(ENCODING)
+        #Add padding to make lenght of header correct
+        sendLen += b' '*(HEADER_SIZE-len(sendLen))
+        message = sendLen + message
+        self.sock.sendall(message)
     
     def recResponse(self):
         msgLen = self.sock.recv(HEADER_SIZE).decode(ENCODING)

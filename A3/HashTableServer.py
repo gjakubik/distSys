@@ -88,7 +88,7 @@ def main():
 
     print('Starting server...')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    #sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     sock.bind(ADDR)
     sock.listen()
     print(f'Listening on {SERVER}:{sock.getsockname()[1]}...')

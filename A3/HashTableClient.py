@@ -11,6 +11,7 @@ class HashTableClient():
 
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         
     def connSock(self, host, port):
         print(f"Connecting to {host}:{port}")

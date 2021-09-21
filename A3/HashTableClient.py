@@ -41,7 +41,10 @@ class HashTableClient():
                 return 
             msgLen = int(msgLen)
             try:
-                resp = json.loads(self.sock.recv(msgLen).decode(ENCODING))
+                resp = self.sock.recv(msgLen).decode(ENCODING)
+                print(msgLen)
+                print(len(resp))
+                resp = json.loads(resp)
             except JSONDecodeError:
                 return None
             #print(f'[STATUS] {resp["status"]}')

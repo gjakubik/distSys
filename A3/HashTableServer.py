@@ -19,11 +19,12 @@ def sendHeader(conn, msgLen):
 
 def sendData(conn, msg):
     message = msg.encode(ENCODING)
+    print(len(message))
     sendHeader(conn, len(message))
     conn.send(message)
 
 def handleRequest(conn, req, ht):
-    print(f'[REQUESTED] {req}')
+    #print(f'[REQUESTED] {req}')
     if req["method"] == "insert":
         ht.insert(req["key"], req["value"])
         sendData(conn, json.dumps({"status": "OK", "data": req}))

@@ -46,7 +46,7 @@ class HashTableClient():
                 while lenRead < msgLen:
                     resp = self.sock.recv(msgLen-lenRead).decode(ENCODING)
                     lenRead += len(resp)
-                    print(len(resp))
+                    #print(len(resp))
                     finalResp += resp
                 finalResp = json.loads(finalResp)
             except JSONDecodeError:

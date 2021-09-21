@@ -20,10 +20,11 @@ def sendHeader(conn, msgLen):
 
 def sendData(conn, msg):
     message = msg.encode(ENCODING)
-    print(len(message))
-    sendHeader(conn, len(message))
-    time.sleep(1)
-    conn.send(message)
+    sendLen = str(len(message)).encode(ENCODING)
+    #Add padding to make lenght of header correct
+    sendLen += b' '*(HEADER_SIZE-len(sendLen))
+    message = sendLen + message
+    conn.sendall(message)
 
 def handleRequest(conn, req, ht):
     #print(f'[REQUESTED] {req}')

@@ -41,16 +41,20 @@ class HashTableClient():
                 return 
             msgLen = int(msgLen)
             try:
-                resp = self.sock.recv(msgLen).decode(ENCODING)
-                print(msgLen)
-                print(len(resp))
-                resp = json.loads(resp)
+                lenRead = 0
+                finalResp = ''
+                while lenRead < msgLen:
+                    resp = self.sock.recv(msgLen-lenRead).decode(ENCODING)
+                    lenRead += len(resp)
+                    print(len(resp))
+                    finalResp += resp
+                finalResp = json.loads(finalResp)
             except JSONDecodeError:
                 return None
             #print(f'[STATUS] {resp["status"]}')
-            if resp["status"] == "OK":
+            if finalResp["status"] == "OK":
                 #print(f'[RESPONSE]: {resp["data"]}')
-                return resp["data"]
+                return finalResp["data"]
             else:
                 return None
 

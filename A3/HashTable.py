@@ -4,6 +4,7 @@ class HashTable():
     def __init__(self):
         self.d = {}
         self.txns = 0
+        self.txn = None
 
     def insert(self, key, val):
         self.d[key] = val
@@ -12,7 +13,10 @@ class HashTable():
         return self.d[key]
 
     def remove(self, key):
-        return self.d.pop(key)
+        try:
+            return self.d.pop(key)
+        except:
+            return None
 
     def scan(self, regex):
         r = re.compile(str(regex))

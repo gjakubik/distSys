@@ -9,7 +9,7 @@ def testPairs(client):
     slowOp       = 0.0
     title        = "\nTesting insert and delete pairs..."
 
-    while numOps < 1000:
+    while numOps < 1020:
         start = time.perf_counter()
         client.insert(str(numOps), numOps*2)
         client.remove(str(numOps))

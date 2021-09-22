@@ -84,10 +84,8 @@ def handleClient(conn, addr, ht):
 # {"method": "insert", "key": x "value": y}
 # {"method": "remove", "key": x}
 def logTransaction(req, ht):
-    txn = open("table.txn", "a")
-    txn.write(json.dumps(req)+"\n")
+    ht.txn.write(json.dumps(req)+"\n")
     ht.txns += 1
-    txn.close()
 
 # Replace table.ckpt with data in ht and delete transactions
 def compactLog(ht):
@@ -98,13 +96,14 @@ def compactLog(ht):
     ckpt.close()
     try:
         os.remove("table.ckpt")
+        ht.txn.close()
         os.remove("table.txn")
         ht.txns = 0
+        ht.txn = open("table.txn", "a")
     except:
         print("Unable to remove tmp.ckpt or wipe table.txn")
 
     os.rename("tmp.ckpt", "table.ckpt")
-
 
 # Load existing data
 def loadData(ht):
@@ -127,10 +126,13 @@ def loadData(ht):
                 ht.insert(req["key"], req["value"])
             elif req["method"] == "remove":
                 ht.remove(req["key"])
+        txn.close()
     except OSError:
         print("No pre-existing transactions")
     except JSONDecodeError:
         print("Unable to read existing logging, something is very wrong")
+
+    ht.txn = open("table.txn", "a")
 
 def main():
     

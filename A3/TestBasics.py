@@ -15,11 +15,12 @@ def main():
 
     print("\nMaking sure you cant delete nothing...")
     for i in range(10):
-        assert(client.remove(i) == None)
+        res = client.remove(str(i))
+        assert(res["value"] == None)
 
     print("\nInserting a large amount of numbers...")
     for i in range(10):
-        client.insert(i, i*3)
+        client.insert(str(i), i*3)
 
     print("\nInserting a list...")
     client.insert("list", [1, 2, 3, 4, 5])
@@ -30,7 +31,7 @@ def main():
     print("\nChecking values...")
     try:
         for i in range(10):
-            assert(client.lookup(i)["value"] == i*3)
+            assert(client.lookup(str(i))["value"] == i*3)
             assert(client.lookup("dict")["value"][str(i)] == i*2)
         
         assert(client.lookup("list")["value"] == [1, 2, 3, 4, 5])
@@ -44,8 +45,8 @@ def main():
 
     print("\nTesting delete...\n")
     for i in range(10):
-        assert(client.remove(i)["value"] == i*3)
-        assert(client.lookup(i) == None)
+        assert(client.remove(str(i))["value"] == i*3)
+        assert(client.lookup(str(i)) == None)
 
 
     client.close()

@@ -91,23 +91,19 @@ def logTransaction(req, ht):
 
 # Replace table.ckpt with data in ht and delete transactions
 def compactLog(ht):
-    # TODO: This has to be an overcomplicated way of doing it
     ckpt = open("tmp.ckpt", "w+")
     ckpt.write(json.dumps(ht.d))
     ckpt.flush()
     os.fsync(ckpt)
     ckpt.close()
-    os.remove("table.ckpt")
-    os.rename("tmp.ckpt", "table.ckpt")
     try:
-        os.remove("tmp.ckpt")
-        txn = open("table.txn", "w+")
-        txn.flush()
-        os.fsync(txn)
-        txn.close()
+        os.remove("table.ckpt")
+        os.remove("table.txn")
         ht.txns = 0
     except:
         print("Unable to remove tmp.ckpt or wipe table.txn")
+
+    os.rename("tmp.ckpt", "table.ckpt")
 
 
 # Load existing data
@@ -125,18 +121,16 @@ def loadData(ht):
     try:
         txn = open("table.txn", "r")
         for line in txn:
+            ht.txns += 1
             req = json.loads(line)
             if req["method"] == "insert":
                 ht.insert(req["key"], req["value"])
-            elif req["method"] == "delete":
+            elif req["method"] == "remove":
                 ht.remove(req["key"])
     except OSError:
         print("No pre-existing transactions")
     except JSONDecodeError:
         print("Unable to read existing logging, something is very wrong")
-
-    # Compact the transaction log to set up files for fresh use
-    compactLog(ht)
 
 def main():
     
@@ -156,18 +150,17 @@ def main():
 
     print('Starting server...')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     sock.bind(ADDR)
     sock.listen()
     print(f'Listening on {SERVER}:{sock.getsockname()[1]}...')
+
     print('Accepting clients...')
-    
     while True:
         sock.settimeout(1.0)
         try:
             conn, addr = sock.accept()
             handleClient(conn, addr, ht)
-        except socket.timeout:
+        except (socket.timeout, KeyboardInterrupt):
             try:
                 pass
             except KeyboardInterrupt:

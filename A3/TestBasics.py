@@ -13,8 +13,12 @@ def main():
     client = HashTableClient()
     client.connSock(SERVER, PORT)
 
+    print("\nMaking sure you cant delete nothing...")
+    for i in range(10):
+        assert(client.remove(i) == None)
+
     print("\nInserting a large amount of numbers...")
-    for i in range(1000):
+    for i in range(10):
         client.insert(i, i*3)
 
     print("\nInserting a list...")
@@ -25,7 +29,7 @@ def main():
 
     print("\nChecking values...")
     try:
-        for i in range(1000):
+        for i in range(10):
             assert(client.lookup(i)["value"] == i*3)
             assert(client.lookup("dict")["value"][str(i)] == i*2)
         
@@ -38,8 +42,8 @@ def main():
     for match in client.scan("[0-9]{2}7")["matches"]:
         assert(str(match)[2] == '7')
 
-    print("\nTesting delete...")
-    for i in range(1000):
+    print("\nTesting delete...\n")
+    for i in range(10):
         assert(client.remove(i)["value"] == i*3)
         assert(client.lookup(i) == None)
 

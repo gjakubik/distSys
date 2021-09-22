@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+from json.decoder import JSONDecodeError
 import sys
+import os
 import socket
 import json
 import time
@@ -12,23 +14,18 @@ ENCODING    = 'utf-8'
 DISCONNECT  = 'DC'
 BAD_REQUEST = {'status': 'Bad Request'}
 
-def sendHeader(conn, msgLen):
-    sendLen = str(msgLen).encode(ENCODING)
-    #Add padding to make lenght of header correct
-    sendLen += b' '*(HEADER_SIZE-len(sendLen))
-    conn.send(sendLen)
-
+#Sends length padded to HEADER_SIZE Bytes then data
 def sendData(conn, msg):
     message = msg.encode(ENCODING)
     sendLen = str(len(message)).encode(ENCODING)
-    #Add padding to make lenght of header correct
     sendLen += b' '*(HEADER_SIZE-len(sendLen))
     message = sendLen + message
-    #print(message)
     conn.sendall(message)
 
+#Handles the request once it has been transformed into a JSON object
 def handleRequest(conn, req, ht):
     if req["method"] == "insert":
+        logTransaction(req, ht)
         ht.insert(req["key"], req["value"])
         sendData(conn, json.dumps({"status": "OK", "data": req}))
 
@@ -38,6 +35,7 @@ def handleRequest(conn, req, ht):
         sendData(conn, json.dumps({"status": "OK", "data": req}))
 
     elif req["method"] == "remove":
+        logTransaction(req, ht)
         val = ht.remove(req["key"])
         req["value"] = val
         sendData(conn, json.dumps({"status": "OK", "data": req}))
@@ -50,32 +48,98 @@ def handleRequest(conn, req, ht):
     else:
         sendData(conn, json.dumps(BAD_REQUEST))
 
+#Loop for recieving messages from client and sending a response
 def handleClient(conn, addr, ht):
     print('Connected to by: ', addr)
-
     connected = True
+
     while connected:
         msgLen = conn.recv(HEADER_SIZE).decode(ENCODING)
-        if msgLen == DISCONNECT:
-            print("Closing connection...")
-            connected = False
-        # Can only be converted to int if it exists
-        if msgLen and msgLen != DISCONNECT: 
-            msgLen = int(msgLen)
-            req = conn.recv(msgLen).decode(ENCODING)
-            if req == DISCONNECT: connected = False
+        if msgLen == DISCONNECT: connected = False
+
+        if msgLen and msgLen != DISCONNECT:
             try:
+                msgLen = int(msgLen)
+                lenRead = 0
+                req = ''
+
+                while lenRead < msgLen:
+                    resp = conn.recv(msgLen-lenRead).decode(ENCODING)
+                    lenRead += len(resp)
+                    req += resp
+
+                if req == DISCONNECT: connected = False
                 req = json.loads(req)
                 handleRequest(conn, req, ht)
             except:
                 sendData(conn, json.dumps(BAD_REQUEST))
+        
+        if ht.txns >= 100: compactLog(ht)
 
+    print("Closing connection...")
     conn.close()
 
+# Append a transaction to table.txn
+# Format: 
+# {"method": "insert", "key": x "value": y}
+# {"method": "remove", "key": x}
+def logTransaction(req, ht):
+    txn = open("table.txn", "a")
+    txn.write(json.dumps(req)+"\n")
+    ht.txns += 1
+    txn.close()
+
+# Replace table.ckpt with data in ht and delete transactions
+def compactLog(ht):
+    ckpt = open("tmp.ckpt", "w+")
+    ckpt.write(json.dumps(ht.d))
+    ckpt.flush()
+    os.fsync(ckpt)
+    ckpt.close()
+    os.remove("table.ckpt")
+    os.rename("tmp.ckpt", "table.ckpt")
+    try:
+        os.remove("tmp.ckpt")
+        txn = open("table.txn", "w+")
+        txn.flush()
+        os.fsync(txn)
+        txn.close()
+        ht.txns = 0
+    except:
+        print("Unable to remove tmp.ckpt or wipe table.txn")
+
+
+# Load existing data
+def loadData(ht):
+    # Open ckpt file and read data into ht
+    try: 
+        ckpt = open("table.ckpt", "r")
+        ht.d = json.loads(ckpt.read())
+        ckpt.close()
+    except OSError:
+        print("No pre-existing data in ckpt")
+    except JSONDecodeError:
+        print("Unable to read existing data, something went quite wrong")
+    # Open transaction file and do all transactions
+    try:
+        txn = open("table.txn", "r")
+        for line in txn:
+            req = json.loads(line)
+            if req["method"] == "insert":
+                ht.insert(req["key"], req["value"])
+            elif req["method"] == "delete":
+                ht.remove(req["key"])
+    except OSError:
+        print("No pre-existing transactions")
+    except JSONDecodeError:
+        print("Unable to read existing logging, something is very wrong")
+
+    # Compact the transaction log to set up files for fresh use
+    compactLog(ht)
 
 def main():
     
-    #Check input args
+    # Check input args
     if len(sys.argv) != 2:
         print("Usage: python3 HashTableServer.py PORTNUM")
         print("PORTNUM of 0 will choose first available port")
@@ -85,6 +149,9 @@ def main():
     SERVER = socket.gethostbyname(socket.gethostname())
     ADDR   = (SERVER, PORT)
     ht     = HashTable()
+
+    print('Loading Data...')
+    loadData(ht)
 
     print('Starting server...')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

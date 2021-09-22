@@ -3,6 +3,7 @@ import re
 class HashTable():
     def __init__(self):
         self.d = {}
+        self.txns = 0
 
     def insert(self, key, val):
         self.d[key] = val

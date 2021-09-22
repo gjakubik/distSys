@@ -91,6 +91,7 @@ def logTransaction(req, ht):
 
 # Replace table.ckpt with data in ht and delete transactions
 def compactLog(ht):
+    # TODO: This has to be an overcomplicated way of doing it
     ckpt = open("tmp.ckpt", "w+")
     ckpt.write(json.dumps(ht.d))
     ckpt.flush()

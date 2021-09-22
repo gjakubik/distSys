@@ -10,7 +10,7 @@ def testInsert(client):
 
     while time.perf_counter() - overallStart < 3:
         start = time.perf_counter()
-        client.insert(numOps, numOps*2)
+        client.insert(str(numOps), numOps*2)
 
         numOps += 1
         opTime = time.perf_counter() - start
@@ -27,7 +27,7 @@ def testLookup(client):
 
     while time.perf_counter() - overallStart < 3:
         start = time.perf_counter()
-        client.lookup(numOps)
+        client.lookup(str(numOps))
 
         numOps += 1
         opTime = time.perf_counter() - start
@@ -45,7 +45,7 @@ def testScan(client):
 
     while time.perf_counter() - overallStart < 3:
         start = time.perf_counter()
-        client.scan(numOps)
+        client.scan(str(numOps))
 
         numOps += 1
         opTime = time.perf_counter() - start
@@ -63,7 +63,7 @@ def testRemove(client):
     
     while time.perf_counter() - overallStart < 3:
         start = time.perf_counter()
-        client.remove(numOps)
+        client.remove(str(numOps))
 
         numOps += 1
         opTime = time.perf_counter() - start

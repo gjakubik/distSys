@@ -162,7 +162,7 @@ def main():
         try:
             conn, addr = sock.accept()
             handleClient(conn, addr, ht)
-        except (socket.timeout, KeyboardInterrupt):
+        except socket.timeout:
             try:
                 pass
             except KeyboardInterrupt:

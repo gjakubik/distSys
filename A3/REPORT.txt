@@ -1,4 +1,110 @@
-## 
+## table.ckpt example
+table.ckpt is simply a single string (and therefore is a single line file) that has been created from a python dict
+using json.dumps. This makes it easy to read all of the data at once with json.loads.
+
+table.ckpt will not have any data until at least 100 transactions have happened.
+
+Here is what it looks like after TestPerf.py runs:
+{"6399": 12798, "6400": 12800, "6401": 12802, "6402": 12804, "6403": 12806, 
+"6404": 12808, "6405": 12810, "6406": 12812, "6407": 12814, "6408": 12816, 
+"6409": 12818, "6410": 12820, "6411": 12822, "6412": 12824, "6413": 12826, 
+"6414": 12828, "6415": 12830, "6416": 12832, "6417": 12834, "6418": 12836, 
+"6419": 12838, "6420": 12840, "6421": 12842, "6422": 12844, "6423": 12846, 
+"6424": 12848, "6425": 12850, "6426": 12852, "6427": 12854, "6428": 12856, 
+"6429": 12858, "6430": 12860, "6431": 12862, "6432": 12864, "6433": 12866, 
+"6434": 12868, "6435": 12870, "6436": 12872, "6437": 12874, "6438": 12876, 
+"6439": 12878, "6440": 12880, "6441": 12882, "6442": 12884, "6443": 12886, 
+"6444": 12888, "6445": 12890, "6446": 12892, "6447": 12894, "6448": 12896, 
+"6449": 12898, "6450": 12900, "6451": 12902, "6452": 12904, "6453": 12906, 
+"6454": 12908, "6455": 12910, "6456": 12912, "6457": 12914, "6458": 12916, 
+"6459": 12918, "6460": 12920, "6461": 12922, "6462": 12924, "6463": 12926, 
+"6464": 12928, "6465": 12930, "6466": 12932, "6467": 12934, "6468": 12936, 
+"6469": 12938, "6470": 12940, "6471": 12942, "6472": 12944, "6473": 12946, 
+"6474": 12948, "6475": 12950, "6476": 12952, "6477": 12954, "6478": 12956, 
+"6479": 12958, "6480": 12960, "6481": 12962, "6482": 12964, "6483": 12966, 
+"6484": 12968, "6485": 12970, "6486": 12972, "6487": 12974, "6488": 12976, 
+"6489": 12978, "6490": 12980, "6491": 12982, "6492": 12984, "6493": 12986, 
+"6494": 12988, "6495": 12990, "6496": 12992, "6497": 12994, "6498": 12996, 
+"6499": 12998, "6500": 13000, "6501": 13002}
+
+*Note: this is all a single line but has been broken up for readability
+
+## table.txn output:
+table.txn uses json.dumps to append any insert or delete request JSON directly to
+the file. At 100 inserts or deletes, a new ckpt file is created and the txn file is wiped.
+
+Here is what table.txn looks like after TestOutliers.py completes:
+{"method": "remove", "key": "986"}
+{"method": "insert", "key": "987", "value": 1974}
+{"method": "remove", "key": "987"}
+{"method": "insert", "key": "988", "value": 1976}
+{"method": "remove", "key": "988"}
+{"method": "insert", "key": "989", "value": 1978}
+{"method": "remove", "key": "989"}
+{"method": "insert", "key": "990", "value": 1980}
+{"method": "remove", "key": "990"}
+{"method": "insert", "key": "991", "value": 1982}
+{"method": "remove", "key": "991"}
+{"method": "insert", "key": "992", "value": 1984}
+{"method": "remove", "key": "992"}
+{"method": "insert", "key": "993", "value": 1986}
+{"method": "remove", "key": "993"}
+{"method": "insert", "key": "994", "value": 1988}
+{"method": "remove", "key": "994"}
+{"method": "insert", "key": "995", "value": 1990}
+{"method": "remove", "key": "995"}
+{"method": "insert", "key": "996", "value": 1992}
+{"method": "remove", "key": "996"}
+{"method": "insert", "key": "997", "value": 1994}
+{"method": "remove", "key": "997"}
+{"method": "insert", "key": "998", "value": 1996}
+{"method": "remove", "key": "998"}
+{"method": "insert", "key": "999", "value": 1998}
+{"method": "remove", "key": "999"}
+{"method": "insert", "key": "1000", "value": 2000}
+{"method": "remove", "key": "1000"}
+{"method": "insert", "key": "1001", "value": 2002}
+{"method": "remove", "key": "1001"}
+{"method": "insert", "key": "1002", "value": 2004}
+{"method": "remove", "key": "1002"}
+{"method": "insert", "key": "1003", "value": 2006}
+{"method": "remove", "key": "1003"}
+{"method": "insert", "key": "1004", "value": 2008}
+{"method": "remove", "key": "1004"}
+{"method": "insert", "key": "1005", "value": 2010}
+{"method": "remove", "key": "1005"}
+{"method": "insert", "key": "1006", "value": 2012}
+{"method": "remove", "key": "1006"}
+{"method": "insert", "key": "1007", "value": 2014}
+{"method": "remove", "key": "1007"}
+{"method": "insert", "key": "1008", "value": 2016}
+{"method": "remove", "key": "1008"}
+{"method": "insert", "key": "1009", "value": 2018}
+{"method": "remove", "key": "1009"}
+{"method": "insert", "key": "1010", "value": 2020}
+{"method": "remove", "key": "1010"}
+{"method": "insert", "key": "1011", "value": 2022}
+{"method": "remove", "key": "1011"}
+{"method": "insert", "key": "1012", "value": 2024}
+{"method": "remove", "key": "1012"}
+{"method": "insert", "key": "1013", "value": 2026}
+{"method": "remove", "key": "1013"}
+{"method": "insert", "key": "1014", "value": 2028}
+{"method": "remove", "key": "1014"}
+{"method": "insert", "key": "1015", "value": 2030}
+{"method": "remove", "key": "1015"}
+{"method": "insert", "key": "1016", "value": 2032}
+{"method": "remove", "key": "1016"}
+{"method": "insert", "key": "1017", "value": 2034}
+{"method": "remove", "key": "1017"}
+{"method": "insert", "key": "1018", "value": 2036}
+{"method": "remove", "key": "1018"}
+{"method": "insert", "key": "1019", "value": 2038}
+{"method": "remove", "key": "1019"}
+
+As you can see, this is the exact same format as the requests from the client,
+which is good for performance because there is no work required to reformat any strings.
+
 
 ## TestPerf.py output:
 
@@ -39,4 +145,23 @@ Testing insert and delete pairs...
 | 1020    | 0.838755795732   | 0.000822309603658961 | 0.01700558281    | 0.0004482432269  |
 +-----------------------------------------------------------------------------------------+
 
+## Significance of results:
 
+These results are meant to show us the performance changes when adding persistence to
+out servers. As expected, logging takes some time, so the latency of insert and delete
+have gone slightly down since my (fixed)A2 code (This wont be obvious from my prior report).
+
+Also as expected, the thoroughput of lookups and scans were largely similar, as there 
+were no added operations on the server for these calls.
+
+Lastly, the slowest and fastest op show us that the latency of an insert or remove
+request can change significantly. This is becasue on most requests, they are simply
+logged, fulfilled, and then the server is ready for another. However, if it is the
+100th transaction in the logfile, then a compact is required. This uses multiple
+file level operations, so takes almost 100 times longer to complete than a normal request.
+
+Overall, the performance is not significantly impacted, but making the compaction 
+faster and less often can make the latency of requests better more often, but will 
+make the occasional request even longer because there is more data to write.
+Another thing to consider is that if the compaction length is too high, server startup
+will take a long time because many more operations are being redone.

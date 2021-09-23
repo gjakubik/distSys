@@ -10,6 +10,7 @@ from HashTable import HashTable
 
 # Constants
 HEADER_SIZE = 64
+COMP_SIZE   = 100
 ENCODING    = 'utf-8'
 DISCONNECT  = 'DC'
 BAD_REQUEST = {'status': 'Bad Request'}
@@ -74,7 +75,7 @@ def handleClient(conn, addr, ht):
             except:
                 sendData(conn, json.dumps(BAD_REQUEST))
         
-        if ht.txns >= 100: compactLog(ht)
+        if ht.txns >= COMP_SIZE: compactLog(ht)
 
     print("Closing connection...")
     conn.close()

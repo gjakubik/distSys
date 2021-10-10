@@ -157,12 +157,14 @@ def main():
     print(f'Listening on {SERVER}:{sock.getsockname()[1]}...')
 
     connections = [ sock ]
+    readable = []
 
     print('Accepting clients...')
     while True:
         try:
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
-            readable, writable, exceptions = select.select(connections, connections, connections)
+            if -1 not in connections:
+                readable, writable, exceptions = select.select(connections, connections, connections)
 
             for conn in readable: 
                 if conn == sock:

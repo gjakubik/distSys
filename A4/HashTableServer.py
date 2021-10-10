@@ -214,6 +214,7 @@ def main():
                 print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Connection crashed')
                 conn.close()
 
+            print('checking time')
             if time.time() - updateSent > 60000:
                 catRegister(regSock, PORT, NETID, PROJ_NAME)
                 updateSent = time.time()

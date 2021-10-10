@@ -169,19 +169,19 @@ def main():
                 if conn == sock:
                     new_conn, addr = conn.accept()
                     new_conn.setblocking(0)
-                    print('Connected to by: ', addr)
+                    print(f'[{conn.getpeername()[0]}] Connected')
                     connections.append(new_conn)
                 else:
-                    print(f'Handling request from {conn.getpeername()}')
+                    print(f'[{conn.getpeername()[0]}] Handling request')
                     connected = handleClient(conn, ht)
                     if not connected:
                         connections.remove(conn)
-                        print(f'Connection to {conn.getpeername()} closed gracefully')
+                        print(f'[{conn.getpeername()[0]}] Connection closed gracefully')
                         conn.close()
 
             for conn in exceptions:
                 connections.remove(conn)
-                print(f'Connection to {conn.getpeername()} crashed')
+                print(f'[{conn.getpeername()[0]}] Connection crashed')
                 conn.close()
 
         except KeyboardInterrupt:

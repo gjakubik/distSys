@@ -15,6 +15,8 @@ COMP_SIZE   = 100
 ENCODING    = 'utf-8'
 DISCONNECT  = 'DC'
 BAD_REQUEST = {'status': 'Bad Request'}
+CATALOG     = ('catalog.cse.nd.edu', 9097)
+NETID       = 'gjakubik'
 
 #Sends length padded to HEADER_SIZE Bytes then data
 def sendData(conn, msg):
@@ -133,18 +135,30 @@ def loadData(ht):
 
     ht.txn = open("table.txn", "a")
 
+def catRegister(regSock, port, netid, projName):
+    print(f'Registering {projName} to {CATALOG}...')
+    sendJSON = {
+        'type': 'hashtable',
+        'owner': netid,
+        'port': port,
+        'project': projName
+    }
+
+    regSock.sendto(json.dumps(sendJSON).encode(ENCODING), CATALOG)
+
 def main():
     
     # Check input args
     if len(sys.argv) != 2:
-        print("Usage: python3 HashTableServer.py PORTNUM")
-        print("PORTNUM of 0 will choose first available port")
+        print("Usage: python3 HashTableServer.py PROJECT_NAME")
+        print(f"PROJECT_NAME will become available on {CATALOG[0]}:{CATALOG[1]}")
         return
 
-    PORT   = int(sys.argv[1])
-    SERVER = socket.gethostbyname(socket.gethostname())
-    ADDR   = (SERVER, PORT)
-    ht     = HashTable()
+    PORT          = 0
+    SERVER        = socket.gethostbyname(socket.gethostname())
+    SERVER_ADDR   = (SERVER, PORT)
+    PROJ_NAME     = sys.argv[1]
+    ht            = HashTable()
 
     print('Loading Data...')
     loadData(ht)
@@ -152,10 +166,18 @@ def main():
     print('Starting server...')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setblocking(0)
-    sock.bind(ADDR)
+    sock.bind(SERVER_ADDR)
+    PORT = sock.getsockname()[1]
     sock.listen(5)
-    print(f'Listening on {SERVER}:{sock.getsockname()[1]}...')
+    print(f'Listening on {SERVER}:{PORT}...')
 
+    # Register to catalog
+    regSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    catRegister(regSock, PORT, NETID, PROJ_NAME)
+    # Variable to keep track of time of last update to catalog
+    updateSent = time.time()
+
+    # list of connections being tracked
     connections = [ sock ]
     readable = []
 
@@ -191,6 +213,10 @@ def main():
                 connections.remove(conn)
                 print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Connection crashed')
                 conn.close()
+
+            if time.time() - updateSent > 60000:
+                catRegister(regSock, PORT, NETID, PROJ_NAME)
+                updateSent = time.time()
 
         except KeyboardInterrupt:
             print('\nStopping server...')

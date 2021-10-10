@@ -164,8 +164,7 @@ def main():
         try:
             print(connections)
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
-            if -1 not in connections:
-                readable, writable, exceptions = select.select(connections, connections, connections)
+            readable, writable, exceptions = select.select(connections, connections, connections)
 
             for conn in readable: 
                 if conn == sock:
@@ -195,6 +194,7 @@ def main():
                     conn.close()
             sock.close()
             print("Goodbye!")
+            break
         
 
 if __name__ == "__main__":

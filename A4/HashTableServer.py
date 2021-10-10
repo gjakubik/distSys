@@ -162,19 +162,17 @@ def main():
     print('Accepting clients...')
     while True:
         try:
-            print(connections)
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
             readable, writable, exceptions = select.select(connections, connections, connections)
 
             for conn in readable: 
                 if conn == sock:
-                    print('Before accept')
                     new_conn, addr = conn.accept()
-                    print('After accept')
                     new_conn.setblocking(0)
                     print('Connected to by: ', addr)
                     connections.append(new_conn)
                 else:
+                    print(f'Handling request from {conn.getpeername()}')
                     connected = handleClient(conn, ht)
                     if not connected:
                         connections.remove(conn)
@@ -187,7 +185,7 @@ def main():
                 conn.close()
 
         except KeyboardInterrupt:
-            print('Stopping server...')
+            print('\nStopping server...')
             for conn in connections:
                 if conn != sock:
                     sendData(conn, DISCONNECT)

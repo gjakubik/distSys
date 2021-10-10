@@ -159,6 +159,10 @@ def main():
     connections = [ sock ]
     readable = []
 
+    # Amount of requests to skip for logging (Too many to see)
+    logVal = 500
+    reqs = 0
+
     print('Accepting clients...')
     while True:
         try:
@@ -172,7 +176,11 @@ def main():
                     print(f'[{conn.getpeername()[0]}] Connected')
                     connections.append(new_conn)
                 else:
-                    print(f'[{conn.getpeername()[0]}] Handling request')
+                    reqs += 1
+                    if reqs == logVal: 
+                        print(f'[{conn.getpeername()[0]}] Handling request')
+                        reqs = 0
+                    
                     connected = handleClient(conn, ht)
                     if not connected:
                         connections.remove(conn)

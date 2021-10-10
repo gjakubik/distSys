@@ -162,6 +162,7 @@ def main():
     print('Accepting clients...')
     while True:
         try:
+            print(connections)
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
             if -1 not in connections:
                 readable, writable, exceptions = select.select(connections, connections, connections)

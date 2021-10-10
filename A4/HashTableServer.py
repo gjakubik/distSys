@@ -173,7 +173,7 @@ def main():
                 if conn == sock:
                     new_conn, addr = conn.accept()
                     new_conn.setblocking(0)
-                    print(f'[{conn.getpeername()[0]}] Connected')
+                    print(f'[{new_conn.getpeername()[0]}] Connected')
                     connections.append(new_conn)
                 else:
                     reqs += 1

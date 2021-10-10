@@ -173,23 +173,23 @@ def main():
                 if conn == sock:
                     new_conn, addr = conn.accept()
                     new_conn.setblocking(0)
-                    print(f'[{addr}] Connected')
+                    print(f'[{addr[0]}:{addr[1]}] Connected')
                     connections.append(new_conn)
                 else:
                     reqs += 1
                     if reqs == logVal: 
-                        print(f'[{conn.getpeername()[0]}] Handling request')
+                        print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Handling request')
                         reqs = 0
                     
                     connected = handleClient(conn, ht)
                     if not connected:
                         connections.remove(conn)
-                        print(f'[{conn.getpeername()[0]}] Connection closed gracefully')
+                        print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Connection closed gracefully')
                         conn.close()
 
             for conn in exceptions:
                 connections.remove(conn)
-                print(f'[{conn.getpeername()[0]}] Connection crashed')
+                print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Connection crashed')
                 conn.close()
 
         except KeyboardInterrupt:

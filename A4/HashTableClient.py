@@ -18,37 +18,34 @@ class HashTableClient():
     def connSock(self, projName):
         print(f"Finding {projName} on {CATALOG[0]}:{CATALOG[1]}")
 
-        try:
-            conn = http.client.HTTPConnection(CATALOG)
+        
+        conn = http.client.HTTPConnection(CATALOG)
 
-            print(conn)
+        print(conn)
 
-            conn.request('GET', '/query.json')
+        conn.request('GET', '/query.json')
+
+        resp = conn.getresponse()
+
+        respJSON = json.loads(resp.read().decode(ENCODING))
+
+        print(respJSON)
+
+        serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
+        
+        print(serverCandidates)
+
+        recent = 0
+        for candidate in serverCandidates:
+            if candidate['lastheardfrom'] > recent:
+                recent = candidate['lastheardfrom']
+                serverObj = candidate
             
-            resp = conn.getresponse()
+        host = serverObj['address']
+        port = serverObj['port']
 
-            respJSON = json.loads(resp.read().decode(ENCODING))
-
-            print(respJSON)
-
-            serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
-            
-            print(serverCandidates)
-
-            recent = 0
-            for candidate in serverCandidates:
-                if candidate['lastheardfrom'] > recent:
-                    recent = candidate['lastheardfrom']
-                    serverObj = candidate
-                
-            host = serverObj['address']
-            port = serverObj['port']
-
-            print(f"Connecting to {host}:{port}")
-            self.sock.connect((host, port))
-
-        except:
-            print('Failed to find server...')
+        print(f"Connecting to {host}:{port}")
+        self.sock.connect((host, port))
 
 
     def sendHeader(self, msgLen):

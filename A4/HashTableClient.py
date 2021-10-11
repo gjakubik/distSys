@@ -1,11 +1,13 @@
 from json.decoder import JSONDecodeError
 import socket
 import json
+import http
 
 # Constants
 HEADER_SIZE = 64
 ENCODING    = 'utf-8'
 DISCONNECT  = 'DC'
+CATALOG     = ('catalog.cse.nd.edu', 9097)
 
 class HashTableClient():
 
@@ -13,9 +15,35 @@ class HashTableClient():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         
-    def connSock(self, host, port):
-        print(f"Connecting to {host}:{port}")
-        self.sock.connect((host, port))
+    def connSock(self, projName):
+        print(f"Finding {projName} on {CATALOG[0]}:{CATALOG[1]}")
+
+        try:
+            conn = http.client.HTTPConnection(CATALOG)
+
+            conn.request('GET', '/query.json')
+
+            resp = conn.getresponse()
+
+            respJSON = json.loads(resp.read().decode(ENCODING))
+
+            serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
+
+            recent = 0
+            for candidate in serverCandidates:
+                if candidate['lastheardfrom'] > recent:
+                    recent = candidate['lastheardfrom']
+                    serverObj = candidate
+                
+            host = serverObj['address']
+            port = serverObj['port']
+
+            print(f"Connecting to {host}:{port}")
+            self.sock.connect((host, port))
+
+        except:
+            print('Failed to find server...')
+
 
     def sendHeader(self, msgLen):
         sendLen = str(msgLen).encode(ENCODING)

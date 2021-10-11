@@ -2,16 +2,13 @@ import sys
 from HashTableClient import HashTableClient
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python3 TestBasics.py HOSTNAME PORTNUM")
+    if len(sys.argv) != 2:
+        print("Usage: python3 TestBasics.py PROJECT_NAME")
         return
-
-    PORT   = int(sys.argv[2])
-    SERVER = sys.argv[1]
 
     print("\nStarting client...")
     client = HashTableClient()
-    client.connSock(SERVER, PORT)
+    client.connSock(sys.argv[1])
 
     print("\nMaking sure you cant delete nothing...")
     for i in range(10):

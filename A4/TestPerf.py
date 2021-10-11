@@ -82,16 +82,13 @@ def printResult(res):
     print(f'+{"-"*74}+')
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python3 TestPerf.py HOSTNAME PORTNUM")
+    if len(sys.argv) != 2:
+        print("Usage: python3 TestPerf.py PROJECT_NAME")
         return
-
-    PORT   = int(sys.argv[2])
-    SERVER = sys.argv[1]
 
     print("\nStarting client...")
     client = HashTableClient()
-    client.connSock(SERVER, PORT)
+    client.connSock(sys.argv[1])
     results = []
 
     results.append(testInsert(client))

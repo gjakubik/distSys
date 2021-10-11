@@ -1,7 +1,7 @@
 from json.decoder import JSONDecodeError
 import socket
 import json
-import http
+import http.client
 
 # Constants
 HEADER_SIZE = 64

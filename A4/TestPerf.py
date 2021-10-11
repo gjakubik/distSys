@@ -73,8 +73,8 @@ def testRemove(client):
     return (title, numOps, totTime, tPut, 1/tPut)
 
 
-def printResult(res):
-    print(res[0])
+def printResult(res, port):
+    print(f'[{port}]: {res[0]}')
     print(f'+{"-"*74}+')
     print(f'| {"Num Ops":<7} | {"Total Time (s)":<16} | {"Thoroughput (ops/s)":<20} | {"Latency (s/op)":<20} |')
     print(f'| {" "*7} | {" "*16} | {" "*20} | {" "*20} |')
@@ -86,9 +86,12 @@ def main():
         print("Usage: python3 TestPerf.py PROJECT_NAME")
         return
 
-    print("\nStarting client...")
     client = HashTableClient()
-    if not client.connSock(sys.argv[1]): return
+    port = client.connSock(sys.argv[1])
+    print(f"\nPort {port} client statistics: \n")
+
+    # Server wasnt found if port 0
+    if port == 0: return
     results = []
 
     results.append(testInsert(client))
@@ -97,7 +100,7 @@ def main():
     results.append(testRemove(client))
     
     for res in results:
-        printResult(res)
+        printResult(res, port)
 
     client.close()
 

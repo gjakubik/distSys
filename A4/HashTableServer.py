@@ -168,7 +168,7 @@ def main():
     sock.setblocking(0)
     sock.bind(SERVER_ADDR)
     PORT = sock.getsockname()[1]
-    sock.listen(5)
+    sock.listen(15)
     print(f'Listening on {SERVER}:{PORT}...')
 
     # Register to catalog

@@ -38,10 +38,10 @@ class HashTableClient():
 
             print(f"Connecting to {host}:{port}")
             self.sock.connect((host, port))
-            return True
+            return port
         except:
             print("Failed to connect to server")
-            return False
+            return 0
 
 
     def sendHeader(self, msgLen):

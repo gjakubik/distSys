@@ -38,7 +38,7 @@ class HashTableClient():
 
             print(f"Connecting to {host}:{port}")
             self.sock.connect((host, port))
-            return port
+            return self.sock.getsockname()[1]
         except:
             print("Failed to connect to server")
             return 0

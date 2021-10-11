@@ -28,7 +28,7 @@ class HashTableClient():
 
         recent = 0
         for candidate in respJSON:
-            print(candidate)
+            print(type(candidate))
             if 'project' or 'type' not in candidate.keys(): continue
             if candidate['project'] == projName and candidate['type'] == 'hashtable':
                 # Find most recently started server

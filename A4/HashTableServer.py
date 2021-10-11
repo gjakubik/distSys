@@ -190,6 +190,8 @@ def main():
         try:
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
             readable, writable, exceptions = select.select(connections, connections, connections, 100)
+
+            print("past select")
             for conn in readable: 
                 if conn == sock:
                     new_conn, addr = conn.accept()

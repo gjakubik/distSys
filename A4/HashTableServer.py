@@ -191,7 +191,6 @@ def main():
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
             readable, writable, exceptions = select.select(connections, connections, connections, 0.1)
 
-            print("past select")
             for conn in readable: 
                 if conn == sock:
                     new_conn, addr = conn.accept()
@@ -215,6 +214,7 @@ def main():
                 print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Connection crashed')
                 conn.close()
 
+            print(time.time() - updateSent)
             if time.time() - updateSent > 60000:
                 catRegister(regSock, PORT, NETID, PROJ_NAME)
                 updateSent = time.time()

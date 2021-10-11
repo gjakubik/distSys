@@ -21,8 +21,10 @@ class HashTableClient():
         try:
             conn = http.client.HTTPConnection(CATALOG)
 
-            conn.request('GET', '/query.json')
+            print(conn)
 
+            conn.request('GET', '/query.json')
+            
             resp = conn.getresponse()
 
             respJSON = json.loads(resp.read().decode(ENCODING))
@@ -32,7 +34,7 @@ class HashTableClient():
             serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
             
             print(serverCandidates)
-            
+
             recent = 0
             for candidate in serverCandidates:
                 if candidate['lastheardfrom'] > recent:

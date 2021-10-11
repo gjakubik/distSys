@@ -215,7 +215,7 @@ def main():
                 conn.close()
 
             print(time.time() - updateSent)
-            if time.time() - updateSent > 60000:
+            if time.time() - updateSent > 60:
                 catRegister(regSock, PORT, NETID, PROJ_NAME)
                 updateSent = time.time()
 

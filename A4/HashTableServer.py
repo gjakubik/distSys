@@ -189,13 +189,10 @@ def main():
     while True:
         try:
             # writable and exceptions are not needed since we dont have to wait for a socket to be readable we jsut send the response
-            readable, writable, exceptions = select.select(connections, connections, connections)
-            print('selected')
+            readable, writable, exceptions = select.select(connections, connections, connections, 100)
             for conn in readable: 
                 if conn == sock:
-                    print('before accept')
                     new_conn, addr = conn.accept()
-                    print('after accept')
                     new_conn.setblocking(0)
                     print(f'[{addr[0]}:{addr[1]}] Connected')
                     connections.append(new_conn)
@@ -216,7 +213,6 @@ def main():
                 print(f'[{conn.getpeername()[0]}:{conn.getpeername()[1]}] Connection crashed')
                 conn.close()
 
-            print('checking time')
             if time.time() - updateSent > 60000:
                 catRegister(regSock, PORT, NETID, PROJ_NAME)
                 updateSent = time.time()

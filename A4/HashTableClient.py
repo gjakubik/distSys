@@ -18,10 +18,7 @@ class HashTableClient():
     def connSock(self, projName):
         print(f"Finding {projName} on {CATALOG[0]}:{CATALOG[1]}")
 
-        
         conn = http.client.HTTPConnection(CATALOG[0], CATALOG[1])
-
-        print(conn)
 
         conn.request('GET', '/query.json')
 
@@ -29,17 +26,15 @@ class HashTableClient():
 
         respJSON = json.loads(resp.read().decode(ENCODING))
 
-        print(respJSON)
-
-        serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
-        
-        print(serverCandidates)
-
         recent = 0
-        for candidate in serverCandidates:
-            if candidate['lastheardfrom'] > recent:
-                recent = candidate['lastheardfrom']
-                serverObj = candidate
+        for candidate in respJSON:
+            if 'project' or 'type' not in candidate.keys(): continue
+            print(candidate)
+            if candidate['project'] == projName and candidate['type'] == 'hashtable':
+                # Find most recently started server
+                if candidate['lastheardfrom'] > recent:
+                    recent = candidate['lastheardfrom']
+                    serverObj = candidate
             
         host = serverObj['address']
         port = serverObj['port']

@@ -27,8 +27,12 @@ class HashTableClient():
 
             respJSON = json.loads(resp.read().decode(ENCODING))
 
-            serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
+            print(respJSON)
 
+            serverCandidates = filter(lambda x: x['project'] == projName and x['type'] == 'hashtable', respJSON)
+            
+            print(serverCandidates)
+            
             recent = 0
             for candidate in serverCandidates:
                 if candidate['lastheardfrom'] > recent:

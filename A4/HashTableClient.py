@@ -16,32 +16,32 @@ class HashTableClient():
         #self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         
     def connSock(self, projName):
-        print(f"Finding {projName} on {CATALOG[0]}:{CATALOG[1]}")
+        try:
+            print(f"Finding {projName} on {CATALOG[0]}:{CATALOG[1]}")
 
-        conn = http.client.HTTPConnection(CATALOG[0], CATALOG[1])
+            conn = http.client.HTTPConnection(CATALOG[0], CATALOG[1])
+            conn.request('GET', '/query.json')
+            respJSON = json.loads(conn.getresponse().read().decode(ENCODING))
 
-        conn.request('GET', '/query.json')
+            recent = 0
+            for candidate in respJSON:
+                keys = candidate.keys()
+                if 'project' not in keys or 'type' not in keys: continue
+                if candidate['project'] == projName and candidate['type'] == 'hashtable':
+                    # Find most recently started server
+                    if candidate['lastheardfrom'] > recent:
+                        recent = candidate['lastheardfrom']
+                        serverObj = candidate
+                
+            host = serverObj['address']
+            port = serverObj['port']
 
-        resp = conn.getresponse()
-
-        respJSON = json.loads(resp.read().decode(ENCODING))
-
-        recent = 0
-        for candidate in respJSON:
-            print(candidate.keys())
-            keys = candidate.keys()
-            if 'project' not in keys or 'type' not in keys: continue
-            if candidate['project'] == projName and candidate['type'] == 'hashtable':
-                # Find most recently started server
-                if candidate['lastheardfrom'] > recent:
-                    recent = candidate['lastheardfrom']
-                    serverObj = candidate
-            
-        host = serverObj['address']
-        port = serverObj['port']
-
-        print(f"Connecting to {host}:{port}")
-        self.sock.connect((host, port))
+            print(f"Connecting to {host}:{port}")
+            self.sock.connect((host, port))
+            return True
+        except:
+            print("Failed to connect to server")
+            return False
 
 
     def sendHeader(self, msgLen):

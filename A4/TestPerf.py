@@ -88,7 +88,7 @@ def main():
 
     print("\nStarting client...")
     client = HashTableClient()
-    client.connSock(sys.argv[1])
+    if not client.connSock(sys.argv[1]): return
     results = []
 
     results.append(testInsert(client))

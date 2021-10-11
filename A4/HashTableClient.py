@@ -19,7 +19,7 @@ class HashTableClient():
         print(f"Finding {projName} on {CATALOG[0]}:{CATALOG[1]}")
 
         
-        conn = http.client.HTTPConnection(CATALOG)
+        conn = http.client.HTTPConnection(CATALOG[0], CATALOG[1])
 
         print(conn)
 

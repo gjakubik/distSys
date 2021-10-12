@@ -775,4 +775,9 @@ stops rising significantly. This means that the server is getting requests from
 the clients as fast as it can possibly manage them. One important thing to
 consider is that as the amount of clients increases, the amount of thoroughput
 per client decreases steadily, but the thoroughput of the system as a whole keeps
-increasing with clients until 6, as mentioned before. 
+increasing with clients until 6, as mentioned before. Also, the proportions of 
+thoroughputs for each operation stayed similar, with scan taking the longest and 
+lookup being the fastest. Scan took much longer for some clients than others
+even when they were running concurrently, which is most likely due to when those
+scans happened to be executed given the amount of numbers inserted by other clients
+at the time of the scan.

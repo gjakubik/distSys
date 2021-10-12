@@ -538,6 +538,8 @@ Closing connection...
 
 ----------------------------------------------------------------------------
 
+Six clients:
+------------
 Finding gjakubik-a4 on catalog.cse.nd.edu:9097
 Connecting to 129.74.152.140:36388
 
@@ -742,3 +744,35 @@ Removing as many numbers as possible...
 | 2588    | 2.9974691961     | 863.395027835696     | 0.00115821839107267  |
 +--------------------------------------------------------------------------+
 Closing connection...
+
+----------------------------------------------------------------------------
+
+To get a good sense of how these are actuially performing, we can add the
+thoroughput of each type of operation for each of the concurrently
+operating clients. Because thoroughput is ops/sec and the clients are
+concurrent, addition is the most accurate way to measure how many operations
+are actually completing in the time the test(s) is/are running.
+
+Total thoroughput of each operation by number of clients:
++---------------------------------------------------------------------------+
+| Num Clients |   Insert    |    Lookup     |    Scan       |    Remove     |
++---------------------------------------------------------------------------+
+|      1      |   2693.52   |    4680.153   |    315.283    |    2729.38    |
+-----------------------------------------------------------------------------
+|      2      |   3843.67   |    9834.693   |    595.699    |    3726.25    |
+-----------------------------------------------------------------------------
+|      3      |   4425.79   |   14621.24    |    672.187    |    4295.82    |
+-----------------------------------------------------------------------------
+|      4      |   5075.98   |   20377.85    |    742.83     |    5106.31    |
+-----------------------------------------------------------------------------
+|      5      |   5522.998  |   24490.80    |    903.23     |    5564.83    |
+-----------------------------------------------------------------------------
+|      6      |   5473.408  |   27566.224   |   1012.059    |    5396.33    |
++---------------------------------------------------------------------------+
+
+As we can see, once the 6th client is added the thoroughput of each operation
+stops rising significantly. This means that the server is getting requests from
+the clients as fast as it can possibly manage them. One important thing to
+consider is that as the amount of clients increases, the amount of thoroughput
+per client decreases steadily, but the thoroughput of the system as a whole keeps
+increasing with clients until 6, as mentioned before. 

@@ -14,6 +14,7 @@ class HashTableClient():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        self.addr = ('', 0)
         
     def connSock(self, projName):
         try:
@@ -38,6 +39,7 @@ class HashTableClient():
 
             print(f"Connecting to {host}:{port}")
             self.sock.connect((host, port))
+            self.addr = (host, port)
             return self.sock.getsockname()[1]
         except:
             print("Failed to connect to server")

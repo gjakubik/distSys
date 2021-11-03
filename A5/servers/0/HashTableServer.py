@@ -34,15 +34,21 @@ def handleRequest(conn, req, ht):
         sendData(conn, json.dumps({"status": "OK", "data": req}))
 
     elif req["method"] == "lookup":
-        val = ht.lookup(req["key"])
-        req["value"] = val
-        sendData(conn, json.dumps({"status": "OK", "data": req}))
+        try:
+            val = ht.lookup(req["key"])
+            req["value"] = val
+            sendData(conn, json.dumps({"status": "OK", "data": req}))
+        except:
+            sendData(conn, json.dumps({"status": "Key not found"}))
 
     elif req["method"] == "remove":
-        logTransaction(req, ht)
-        val = ht.remove(req["key"])
-        req["value"] = val
-        sendData(conn, json.dumps({"status": "OK", "data": req}))
+        try:
+            logTransaction(req, ht)
+            val = ht.remove(req["key"])
+            req["value"] = val
+            sendData(conn, json.dumps({"status": "OK", "data": req}))
+        except:
+            sendData(conn, json.dumps({"status": "Key not found"}))
 
     elif req["method"] == "scan":
         val = ht.scan(req["regex"])

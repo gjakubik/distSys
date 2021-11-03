@@ -60,7 +60,7 @@ class ClusterClient():
                 raise ClientError
 
         print(resp)
-        return resp["value"]
+        return resp["data"]["value"]
 
     # TODO: lookup in possible places until value is found
     def lookup(self, key):
@@ -78,7 +78,7 @@ class ClusterClient():
             elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
                 raise ClientError
         # return None when val not found
-        return resp["value"]
+        return resp["data"]["value"]
 
 
     # Remove from all servers corresponding to key
@@ -96,7 +96,7 @@ class ClusterClient():
             elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
                 raise ClientError
         
-        return resp["value"]
+        return resp["data"]["value"]
 
     # Find the result for each server and concatenate them
     def scan(self, regex):
@@ -114,7 +114,7 @@ class ClusterClient():
             elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
                 raise ClientError
 
-            results += resp["matches"]
+            results += resp["data"]["matches"]
         
         return results
 

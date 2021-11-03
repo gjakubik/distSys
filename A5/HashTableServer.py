@@ -86,6 +86,8 @@ def handleClient(conn, ht):
 # {"method": "remove", "key": x}
 def logTransaction(req, ht):
     ht.txn.write(json.dumps(req)+"\n")
+    ht.txn.flush()
+    os.fsync(ht.txn)
     ht.txns += 1
 
 # Replace table.ckpt with data in ht and delete transactions

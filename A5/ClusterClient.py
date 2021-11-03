@@ -1,6 +1,7 @@
 import time
+import hashlib
 
-import HashTableClient
+from HashTableClient import HashTableClient
 
 class ClusterClient():
     # Return 0 on failure, 1 on success
@@ -15,32 +16,55 @@ class ClusterClient():
             server = HashTableClient()
             port = server.connSock(f'{name}-{i}')
             # If returned port is 0, connection failed, so the full init fails
-            if port:
+            if port != 0:
                 self.servers.append(server)
             else:
                 return 0
 
         return 1
     
-    # TODO: findserver will take a key and return the index of the server
-    # to be used for that key
-    def findServer(key):
-        pass
+    # findservers will take a key and return the list of server indicies
+    # TODO: Possible performance benefit from memoizing hashes if same keys are used often
+    def findServers(self, key):
+        H = hashlib.sha256()
+        H.update(key.encode())
+        S = int.from_bytes(H.digest(), 'big') % self.N
+        indicies = [S]
+        for i in range(self.K):
+            if i == 0:
+                continue
+            indicies.append( (S+i) % self.N )
 
-    # Invoke each of insert, lookup and remove by
-    # finding correct server index and passing operation to that handler
+        return indicies
+
+    # Find the servers that correspond to the key then insert into all
     def insert(self, key, val):
-        self.servers[self.findServer(key)].insert(key, val)
+        for i in self.findServers(key):
+            self.servers[i].insert(key, val)
 
+    # TODO: lookup in possible places until value is found
     def lookup(self, key):
-        self.servers[self.findServer(key)].lookup(key)
+        for i in self.findServers(key):
+            val = self.servers[i].lookup(key)
+            if  val != None:
+                return val["value"]
+        # return None when val not found
+        return None
 
+
+    # Remove from all servers corresponding to key
     def remove(self, key):
-        self.servers[self.findServer(key)].remove(key)
+        for i in self.findServers(key):
+            val = self.servers[i].remove(key)
+        return val
 
-    # TODO: Scan must find the result for each server and concatenate them
+    # Find the result for each server and concatenate them
     def scan(self, regex):
-        pass
+        results = []
+        for server in self.servers:
+            results += server.scan(regex)
+        
+        return results
 
     def close(self):
         print("Closing connections...")

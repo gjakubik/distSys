@@ -79,13 +79,9 @@ class HashTableClient():
                     finalResp += resp
                 finalResp = json.loads(finalResp)
             except JSONDecodeError:
-                return None
+                return {"status": "Bad response"}
             #print(f'[STATUS] {resp["status"]}')
-            if finalResp["status"] == "OK":
-                #print(f'[RESPONSE]: {resp["data"]}')
-                return finalResp["data"]
-            else:
-                return None
+            return finalResp
 
     def insert(self, key, val):
         req = {

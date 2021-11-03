@@ -3,6 +3,14 @@ import hashlib
 
 from HashTableClient import HashTableClient
 
+class ServerError(Exception):
+    '''Raised when the server doesn't respond'''
+    pass
+
+class ClientError(Exception):
+    '''Raised when the client sends a bad request'''
+    pass
+
 class ClusterClient():
     # Return 0 on failure, 1 on success
     def __init__(self, name, N, K):
@@ -36,33 +44,78 @@ class ClusterClient():
             indicies.append( (S+i) % self.N )
 
         return indicies
-
+        
     # Find the servers that correspond to the key then insert into all
     def insert(self, key, val):
         for i in self.findServers(key):
-            self.servers[i].insert(key, val)
+            resp = self.servers[i].insert(key, val)
+            # If response was bad, we should try to reestablish a new connection
+            if resp["status"] == "Bad Response":
+                self.servers[i] = HashTableClient()
+                self.servers[i].connSock(f'{self.name}-{i}')
+                resp = self.servers[i].insert(key, val)
+                # If bad response again, stop trying
+                if resp["status"] == "Bad Response":
+                    raise ServerError
+            # If request was bad, then it was an invalid op or invalid key, so client side issue
+            elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
+                raise ClientError
+
+        return resp["value"]
 
     # TODO: lookup in possible places until value is found
     def lookup(self, key):
         for i in self.findServers(key):
-            val = self.servers[i].lookup(key)
-            if  val != None:
-                return val["value"]
+            resp = self.servers[i].lookup(key)
+            # If response was bad, we should try to reestablish a new connection
+            if resp["status"] == "Bad Response":
+                self.servers[i] = HashTableClient()
+                self.servers[i].connSock(f'{self.name}-{i}')
+                resp = self.servers[i].lookup(key)
+                # If bad response again, stop trying
+                if resp["status"] == "Bad Response":
+                    raise ServerError
+            # If request was bad, then it was an invalid op or invalid key, so client side issue
+            elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
+                raise ClientError
         # return None when val not found
-        return None
+        return resp["value"]
 
 
     # Remove from all servers corresponding to key
     def remove(self, key):
         for i in self.findServers(key):
-            val = self.servers[i].remove(key)
-        return val
+            resp = self.servers[i].remove(key)
+            if resp["status"] == "Bad Response":
+                self.servers[i] = HashTableClient()
+                self.servers[i].connSock(f'{self.name}-{i}')
+                resp = self.servers[i].remove(key)
+                # If bad response again, stop trying
+                if resp["status"] == "Bad Response":
+                    raise ServerError
+            # If request was bad, then it was an invalid op or invalid key, so client side issue
+            elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
+                raise ClientError
+        
+        return resp["value"]
 
     # Find the result for each server and concatenate them
     def scan(self, regex):
         results = []
-        for server in self.servers:
-            results += server.scan(regex)
+        for i in range(self.K):
+            resp = self.servers[i].scan(regex)
+            if resp["status"] == "Bad Response":
+                self.servers[i] = HashTableClient()
+                self.servers[i].connSock(f'{self.name}-{i}')
+                resp = self.servers[i].scan(regex)
+                # If bad response again, stop trying
+                if resp["status"] == "Bad Response":
+                    raise ServerError
+            # If request was bad, then it was an invalid op or invalid key, so client side issue
+            elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
+                raise ClientError
+
+            results += resp["matches"]
         
         return results
 

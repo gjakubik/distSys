@@ -13,10 +13,7 @@ class HashTable():
         return self.d[key]
 
     def remove(self, key):
-        try:
-            return self.d.pop(key)
-        except:
-            return None
+        return self.d.pop(key)
 
     def scan(self, regex):
         r = re.compile(str(regex))

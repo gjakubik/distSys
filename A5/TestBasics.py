@@ -1,22 +1,29 @@
 import sys
-from HashTableClient import HashTableClient
+from ClusterClient import ClusterClient, ClientError, ServerError
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python3 TestBasics.py PROJECT_NAME")
+    if len(sys.argv) != 4:
+        print("Usage: python3 TestBasics.py PROJECT_NAME N K")
         return
 
     print("\nStarting client...")
-    client = HashTableClient()
-    if not client.connSock(sys.argv[1]): return
+    client = ClusterClient()
+    if client == 1: 
+        print("Connection failed. Check servers and try again")
+        return
 
     print("\nMaking sure you cant delete nothing...")
     for i in range(10):
-        res = client.remove(str(i))
-        assert(res["value"] == None)
+        try:
+            val = client.remove(str(i))
+            if val:
+                raise AssertionError
+        # ClientError expected, Any other error will make test fail
+        except ClientError:
+            pass
 
     print("\nInserting a large amount of numbers...")
-    for i in range(10):
+    for i in range(1000):
         client.insert(str(i), i*3)
 
     print("\nInserting a list...")
@@ -26,24 +33,26 @@ def main():
     client.insert("dict", {str(i): i*2 for i in range(1000)})
 
     print("\nChecking values...")
-    try:
-        for i in range(10):
-            assert(client.lookup(str(i))["value"] == i*3)
-            assert(client.lookup("dict")["value"][str(i)] == i*2)
-        
-        assert(client.lookup("list")["value"] == [1, 2, 3, 4, 5])
-    except AssertionError as e:
-        print('Test Failed')
-        print(e)
+    for i in range(1000):
+        assert(client.lookup(str(i)) == i*3)
+        assert(client.lookup("dict")[str(i)] == i*2)
+    
+    assert(client.lookup("list") == [1, 2, 3, 4, 5])
 
     print("\nTesting scan...")
-    for match in client.scan("[0-9]{2}7")["matches"]:
+    for match in client.scan("[0-9]{2}7"):
         assert(str(match)[2] == '7')
 
     print("\nTesting delete...\n")
-    for i in range(10):
-        assert(client.remove(str(i))["value"] == i*3)
-        assert(client.lookup(str(i)) == None)
+    for i in range(1000):
+        assert(client.remove(str(i)) == i*3)
+        try:
+            val = client.lookup(str(i))
+            if val:
+                raise AssertionError
+        # ClientError expected, Any other error will make test fail
+        except ClientError:
+            pass
 
 
     client.close()

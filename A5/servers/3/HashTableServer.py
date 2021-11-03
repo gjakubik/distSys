@@ -7,7 +7,7 @@ import socket
 import json
 import select
 import time
-from A5.HashTable import HashTable
+from HashTable import HashTable
 
 # Constants
 HEADER_SIZE = 64

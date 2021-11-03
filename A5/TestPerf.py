@@ -1,6 +1,6 @@
 import sys
 import time
-from HashTableClient import HashTableClient
+from ClusterClient import ClusterClient, ClientError, ServerError
 
 def testInsert(client):
     numOps       = 0
@@ -27,7 +27,10 @@ def testLookup(client):
 
     while time.perf_counter() - overallStart < 3:
         start = time.perf_counter()
-        client.lookup(str(numOps))
+        try:
+            client.lookup(str(numOps))
+        except ClientError:
+            pass
 
         numOps += 1
         opTime = time.perf_counter() - start
@@ -63,7 +66,10 @@ def testRemove(client):
     
     while time.perf_counter() - overallStart < 3:
         start = time.perf_counter()
-        client.remove(str(numOps))
+        try:
+            client.remove(str(numOps))
+        except ClientError:
+            pass
 
         numOps += 1
         opTime = time.perf_counter() - start
@@ -73,8 +79,8 @@ def testRemove(client):
     return (title, numOps, totTime, tPut, 1/tPut)
 
 
-def printResult(res, port):
-    print(f'[{port}]: {res[0]}')
+def printResult(res):
+    print(f'{res[0]}')
     print(f'+{"-"*74}+')
     print(f'| {"Num Ops":<7} | {"Total Time (s)":<16} | {"Thoroughput (ops/s)":<20} | {"Latency (s/op)":<20} |')
     print(f'| {" "*7} | {" "*16} | {" "*20} | {" "*20} |')
@@ -82,16 +88,15 @@ def printResult(res, port):
     print(f'+{"-"*74}+')
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python3 TestPerf.py PROJECT_NAME")
+    if len(sys.argv) != 4:
+        print("Usage: python3 TestPerf.py PROJECT_NAME N K")
         return
 
-    client = HashTableClient()
-    port = client.connSock(sys.argv[1])
-    print(f"\nPort {port} client statistics: \n")
+    client = ClusterClient(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
+    if client == None:
+        print('Connection failed')
+        return
 
-    # Server wasnt found if port 0
-    if port == 0: return
     results = []
 
     results.append(testInsert(client))
@@ -100,7 +105,7 @@ def main():
     results.append(testRemove(client))
     
     for res in results:
-        printResult(res, port)
+        printResult(res)
 
     client.close()
 

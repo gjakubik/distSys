@@ -27,9 +27,7 @@ class ClusterClient():
             if port != 0:
                 self.servers.append(server)
             else:
-                return 0
-
-        return 1
+                return None
     
     # findservers will take a key and return the list of server indicies
     # TODO: Possible performance benefit from memoizing hashes if same keys are used often

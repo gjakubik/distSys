@@ -23,17 +23,17 @@ def main():
             pass
 
     print("\nInserting a large amount of numbers...")
-    for i in range(1000):
+    for i in range(10):
         client.insert(str(i), i*3)
 
     print("\nInserting a list...")
     client.insert("list", [1, 2, 3, 4, 5])
 
-    print("\nInserting a large dict...")
-    client.insert("dict", {str(i): i*2 for i in range(1000)})
+    print("\nInserting a dict...")
+    client.insert("dict", {str(i): i*2 for i in range(10)})
 
     print("\nChecking values...")
-    for i in range(1000):
+    for i in range(10):
         assert(client.lookup(str(i)) == i*3)
         assert(client.lookup("dict")[str(i)] == i*2)
     
@@ -44,7 +44,7 @@ def main():
         assert(str(match)[2] == '7')
 
     print("\nTesting delete...\n")
-    for i in range(1000):
+    for i in range(10):
         assert(client.remove(str(i)) == i*3)
         try:
             val = client.lookup(str(i))

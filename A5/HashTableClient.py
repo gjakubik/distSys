@@ -117,6 +117,5 @@ class HashTableClient():
         return self.recResponse()
 
     def close(self):
-        print("Closing connection...")
         self.sock.send(DISCONNECT.encode(ENCODING))
         self.sock.close()

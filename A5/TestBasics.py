@@ -7,8 +7,9 @@ def main():
         return
 
     print("\nStarting client...")
-    client = ClusterClient(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
-    if client == None: 
+    try:
+        client = ClusterClient(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
+    except ServerError:
         print("Connection failed. Check servers and try again")
         return
 

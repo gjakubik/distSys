@@ -59,6 +59,7 @@ class ClusterClient():
             elif resp["status"] == "Bad Request" or resp["status"] == "Key not found":
                 raise ClientError
 
+        print(resp)
         return resp["value"]
 
     # TODO: lookup in possible places until value is found

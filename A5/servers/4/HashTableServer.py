@@ -134,7 +134,10 @@ def loadData(ht):
             if req["method"] == "insert":
                 ht.insert(req["key"], req["value"])
             elif req["method"] == "remove":
-                ht.remove(req["key"])
+                try:
+                    ht.remove(req["key"])
+                except:
+                    pass
         txn.close()
     except OSError:
         print("No pre-existing transactions")

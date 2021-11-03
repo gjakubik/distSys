@@ -28,6 +28,7 @@ def sendData(conn, msg):
 
 #Handles the request once it has been transformed into a JSON object
 def handleRequest(conn, req, ht):
+    print(req)
     if req["method"] == "insert":
         logTransaction(req, ht)
         ht.insert(req["key"], req["value"])
